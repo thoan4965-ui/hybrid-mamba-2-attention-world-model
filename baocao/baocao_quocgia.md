@@ -215,7 +215,8 @@ Thay CfC bằng Mamba-2 (trạng thái rời rạc, không khuếch đại nhi�
 
 | Model | GPU | Success | Seeds |
 |---|---|---|---|
-| **Hybrid Mamba-2** | T4 fp32 / RTX 5090 | **94.7% ± 3.1%** | 3072,3073,3074 |
+| **Hybrid Mamba-2** | T4 fp32 | **94.7% ± 3.1%** (92,98,94) | 3072,3073,3074 |
+| **Hybrid Mamba-2** | RTX 5090 | **94.7% ± 3.1%** (94,98,92) | 3072,3073,3074 |
 | LeWM official (3 seeds) | T4 fp32 | 86.0% ± 4.0% | 3072,3073,3074 |
 | LeWM official (3 seeds) | RTX 5090 | 88.0% ± 4.0% (88,92,84) | 3072,3073,3074 |
 | LeWM paper [2] | (không rõ) | 96% ± 2.83% | — |
@@ -250,7 +251,7 @@ LeWM paper [2] thừa nhận: *"auto-regressive rollouts accumulate prediction e
 
 | Model | First episode | Post-compile/ep | Ghi chú |
 |---|---|---|---|
-| LeWM AR | ~98s (cuDNN init) | ~20s (T4) / ~43s/50 (5090) | Attention kernel có sẵn |
+| LeWM AR | ~98s (cuDNN init) | ~20s (T4) / ~43s/50ep (5090) | Attention kernel có sẵn |
 | Hybrid Mamba-2 | ~1160s (Triton compile) | ~85s (T4) / ~107s (5090) | Triton kernel compile lần đầu 20 phút |
 
 Hybrid chậm hơn LeWM ~4× (T4) / ~2.5× (5090). Thời gian này chỉ mang tính tham khảo vì Mamba-2 Triton kernel thiết kế cho GPU Ampere+ (A100, H100) — trên T4 (Turing) chưa tối ưu; code Hybrid chưa dùng torch.compile.
@@ -292,7 +293,7 @@ Trên cùng GPU T4 fp32 (3 seeds, cùng seed protocol), Hybrid Mamba-2 đạt 94
 
 ### 6\.4\. Hạn chế
 
-1. **CEM solve time:** Hybrid ~85s/ep (T4) / ~107s (5090) vs LeWM ~20s (T4) — chậm ~2.5-4×. Mamba-2 Triton kernel chưa tối ưu cho T4, cần benchmark A100/RTX 5090 để so sánh công bằng.
+1. **CEM solve time:** ~85s/ep vs LeWM ~20s/ep trên T4 (chậm ~4×) và ~107s vs ~43s/50ep trên RTX 5090 (chậm ~2.5×). Mamba-2 Triton kernel thiết kế cho GPU Ampere+ (A100/H100) nên trên T4 chưa tối ưu; code chưa dùng torch.compile — cần benchmark trên A100 để so sánh công bằng.
 2. **Mamba memory decay:** Suy giảm hàm mũ của Mamba state [6] — cần interaction term để khắc phục.
 3. **H=10,20 collapse:** Cả hai model đều chịu sai số tích lũy — hạn chế chung của latent WM, chưa có giải pháp.
 4. **TwoRoom variance cao:** Std ±10.1% (Hybrid) và ±10.3% (LeWM) với 3 seeds. Cần thêm seeds để khẳng định xu hướng.
@@ -393,7 +394,7 @@ Kết quả tái lập 3 seeds trên 2 GPU (T4/RTX 5090): 92%, 98%, 94% → 94.7
 | # | Nguồn |
 |---|---|
 | [1] | LeCun, Y. (2022). A Path Towards Autonomous Machine Intelligence. |
-| [2] | Maes, L. et al. (2026). LeWorldModel: Stable End-to-End JEPA from Pixels. arXiv 2603.19312. |
+| [2] | Maes, L., Le Lidec, Q., Scieur, D., LeCun, Y., Balestriero, R. (2026). LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels. arXiv 2603.19312. |
 | [3] | Hasani, R. et al. (2022). Closed-form Continuous-time Neural Networks. Nature Machine Intelligence. |
 | [4] | Dao, T. & Gu, A. (2024). Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality. ICML 2024. |
 | [5] | Balestriero, R. & LeCun, Y. (2025). LeJEPA: Provable and Scalable Self-Supervised Learning Without the Heuristics. arXiv 2511.08544. |
@@ -404,7 +405,7 @@ Kết quả tái lập 3 seeds trên 2 GPU (T4/RTX 5090): 92%, 98%, 94% → 94.7
 | [10] | Li, Y. et al. (2026). TransMamba: A Sequence-Level Hybrid Transformer-Mamba Language Model. AAAI 2026. |
 | [11] | Liu, X. et al. (2020). Neural SDE: Stabilizing Neural ODE Networks with Stochasticity. NeurIPS 2020. |
 | [12] | Rob Knight (2022). DexHand V1.0: Open-Source Dexterous Humanoid Robot Hand. GitHub. |
-| [13] | MambaLite-Micro (2025). Mamba LLM trước trên MCU với INT4 quantization. arXiv 2509.05488. |
-| [14] | Quamba (2025). Post-training quantization to INT8 cho Mamba/SSM triển khai edge. |
+| [13] | Xu, H. et al. (2025). MambaLite-Micro: Memory-Optimized Mamba Inference on MCUs. arXiv 2509.05488. |
+| [14] | Chiang, H.-Y. et al. (2025). Quamba: A Post-Training Quantization Recipe for Selective State Space Models. ICLR 2025. |
 
 

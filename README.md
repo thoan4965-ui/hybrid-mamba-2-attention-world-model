@@ -47,7 +47,7 @@ python eval.py --config-name=pusht policy=<ckpt> --seed=3072
 
 ## Tham khảo
 - [1] LeCun, Y. (2022). A Path Towards Autonomous Machine Intelligence.
-- [2] Maes, L. et al. (2026). LeWorldModel. arXiv 2603.19312.
+- [2] Maes, L., Le Lidec, Q., Scieur, D., LeCun, Y., Balestriero, R. (2026). LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels. arXiv 2603.19312.
 - [3] Hasani, R. et al. (2022). Closed-form Continuous-time Neural Networks. Nature Machine Intelligence.
 - [4] Dao, T. & Gu, A. (2024). Transformers are SSMs. ICML 2024.
 - [5] Balestriero, R. & LeCun, Y. (2025). LeJEPA. arXiv 2511.08544.
@@ -58,5 +58,5 @@ python eval.py --config-name=pusht policy=<ckpt> --seed=3072
 - [10] Li, Y. et al. (2026). TransMamba: A Sequence-Level Hybrid Transformer-Mamba Language Model. AAAI 2026.
 - [11] Liu, X. et al. (2020). Neural SDE: Stabilizing Neural ODE Networks with Stochasticity. NeurIPS 2020.
 - [12] Rob Knight (2022). DexHand V1.0: Open-Source Dexterous Humanoid Robot Hand. GitHub.
-- [13] MambaLite-Micro (2025). Mamba LLM trên MCU với INT4 quantization. arXiv 2509.05488.
-- [14] Quamba: Post-training quantization INT8 cho Mamba/SSM triển khai edge.
+- [13] Xu, H. et al. (2025). MambaLite-Micro: Memory-Optimized Mamba Inference on MCUs. arXiv 2509.05488.
+- [14] Chiang, H.-Y. et al. (2025). Quamba: A Post-Training Quantization Recipe for Selective State Space Models. ICLR 2025.
