@@ -277,7 +277,7 @@ Khi goal xa hơn, cả CfC và Mamba đều giảm — CfC 78%→6%, Mamba 86%�
 
 Cơ chế: SIGReg [5] tạo nhiễu trong latent embeddings. Với AR (không trạng thái) và Mamba-2 (trạng thái rời rạc), nhiễu được reset hoặc lọc sau mỗi lần replan. Với CfC, nhiễu tích lũy trong ODE hidden state qua nhiều lần replan. Lý thuyết ủng hộ nhận định: Neural SDE paper [11] ghi nhận *"slightly perturbed input state will be amplified in deep layers"*, trong khi Mamba paper [8] khẳng định *"selectively filters out irrelevant noise tokens"* — hai cơ chế đối lập giải thích kết quả quan sát.
 
-**Lưu ý:** CfC không yếu về temporal — đã kiểm chứng trên robot thật (V0: drift 34× thấp hơn AR). CfC chỉ **không tương thích với SIGReg**, không phải CfC kém.
+**Lưu ý:** CfC không yếu về temporal — đã kiểm chứng trên robot thật (V0, xem §4.1). CfC chỉ **không tương thích với SIGReg**, không phải CfC kém.
 
 ### 6\.2\. Sai số tích lũy ở H lớn — giới hạn chung
 
@@ -289,11 +289,11 @@ Riêng với Mamba-2, Ma & Najarian [6] chứng minh phụ thuộc dài giảm t
 
 ### 6\.3\. So sánh với LeWM
 
-Trên cùng GPU T4 fp32 (3 seeds, cùng seed protocol), Hybrid Mamba-2 đạt 94.7%±3.1%, LeWM AR đạt 86.0%±4.0% — chênh lệch **+8.7%** là kết quả chính. Trên RTX 5090: 94.7% vs 88.0% (+6.7%). So với số paper (96%±2.83%), kết quả của Hybrid nằm trong khoảng tin cậy chồng lấp — cho thấy hybrid KHÔNG thua kém dù bị hạn chế bởi GPU so với paper.
+Kết quả của Hybrid nằm trong khoảng tin cậy chồng lấp với số paper (96%±2.83%) — cho thấy kiến trúc KHÔNG thua kém dù bị hạn chế về phần cứng so với paper, và tái lập ổn định trên 2 GPU với cùng cấu hình (số liệu bảng §5.2, §5.4).
 
 ### 6\.4\. Hạn chế
 
-1. **CEM solve time:** ~85s/ep vs LeWM ~20s/ep trên T4 (chậm ~4×) và ~107s vs ~43s/50ep trên RTX 5090 (chậm ~2.5×). Mamba-2 Triton kernel thiết kế cho GPU Ampere+ (A100/H100) nên trên T4 chưa tối ưu; code chưa dùng torch.compile — cần benchmark trên A100 để so sánh công bằng.
+1. **CEM solve time:** ~85s/ep vs LeWM ~20s/ep trên T4 (chậm ~4×) và ~107s vs ~43s/50ep trên RTX 5090 (chậm ~2.5×) — đã đo trên 2 GPU, cùng seed và cấu hình. Đây là trade-off thực tế của Mamba-2 Triton kernel so với attention kernel đã tối ưu sẵn của LeWM; code chưa dùng torch.compile — còn dư địa tối ưu.
 2. **Mamba memory decay:** Suy giảm hàm mũ của Mamba state [6] — cần interaction term để khắc phục.
 3. **H=10,20 collapse:** Cả hai model đều chịu sai số tích lũy — hạn chế chung của latent WM, chưa có giải pháp.
 4. **TwoRoom variance cao:** Std ±10.1% (Hybrid) và ±10.3% (LeWM) với 3 seeds. Cần thêm seeds để khẳng định xu hướng.
@@ -303,7 +303,7 @@ Trên cùng GPU T4 fp32 (3 seeds, cùng seed protocol), Hybrid Mamba-2 đạt 94
 Hạn chế về thời gian giải kế hoạch cần được cân nhắc bối cảnh triển khai:
 
 - **Mamba-2 vốn dùng thuật toán SSD tận dụng tensor-core matmul** [4] — nhanh 2-8× so với Mamba-1, và độ phức tạp xử lý **near-linear** với độ dài chuỗi, trong khi Attention có độ phức tạp O(N²). Lợi thế này thể hiện rõ khi độ dài chuỗi tăng (planning H lớn, nhiều khung hình).
-- Tuy nhiên, **kết quả thời gian của nghiên cứu này đạt được trên T4 fp32** — Mamba-2 Triton kernel thiết kế cho GPU Ampere+ (A100/H100); trên T4 hiệu quả chưa được khai thác. **Việc so sánh trực tiếp chi phí huấn luyện Mamba-2 vs AR trong nghiên cứu này chưa được đo** — cần benchmark có kiểm soát trên cùng phần cứng trước khi kết luận.
+- Tuy nhiên, **kết quả thời gian của nghiên cứu này đạt được trên T4 fp32 và RTX 5090** — Mamba-2 Triton kernel khai thác tốt hơn trên GPU hiện đại (chậm ~2.5× trên 5090 so với ~4× trên T4). **Việc so sánh trực tiếp chi phí huấn luyện Mamba-2 vs AR trong nghiên cứu này chưa được đo** — cần benchmark có kiểm soát trên cùng phần cứng trước khi kết luận.
 - Khi triển khai trên phần cứng hạn chế (robot phổ thông, CPU/MCU), hướng nghiên cứu tiếp nối **không dùng CEM solver** — thay bằng CfC-habit phản xạ 1 lần forward (vài ms), chỉ dùng mô hình 1 bước để kiểm chứng (xem §7.2, §6.2). Các nghiên cứu gần đây (MambaLite-Micro, Quamba) ủng hộ khả năng triển khai SSM trên edge với lượng hóa INT8 — là hướng đáng xem xét cho giai đoạn sau.
 
 ***
@@ -312,14 +312,9 @@ Hạn chế về thời gian giải kế hoạch cần được cân nhắc bố
 
 ### 7\.1\. Kết luận
 
-Nghiên cứu này đề xuất **Hybrid Mamba-2+Attention** — kiến trúc lai thay MLP (LeWM) bằng Mamba-2 trạng thái rời rạc trong JEPA predictor:
+Nghiên cứu đề xuất **Hybrid Mamba-2+Attention** — kiến trúc lai thay MLP không trạng thái (LeWM AR) bằng Mamba-2 trạng thái rời rạc trong bộ dự đoán JEPA, và kể một hành trình nghiên cứu trọn vẹn: từ robot thật (V0), qua một thất bại có giá trị (V1 — phát hiện SIGReg tương tác xấu với trạng thái ODE), đến kiến trúc thắng ở H=5 trên cùng điều kiện (V2.1: Push-T 94.7%±3.1% so với LeWM 88.0%±4.0% trên RTX 5090 và 86.0%±4.0% trên T4 — khoảng cách tái lập trên 2 GPU, 3 seeds).
 
-1. **Scheduled Sampling cho CfC** cải thiện chuỗi dự đoán 29× — theo tra cứu, chưa có paper nào áp dụng cho ODE-RNN.
-2. **Phát hiện SIGReg × ODE** — CfC giảm từ 78% (goal=25) xuống 6% (goal=100, T=16). Mamba-2 giảm ít hơn (86%→18% cùng goal, dù dùng T=4 khác T=16), gợi ý trạng thái ODE khuếch đại SIGReg noise.
-3. **Push-T beat LeWM AR trên cùng GPU:** Hybrid 94.7%±3.1% (3 seeds) vs 88.0%±4.0% (5090) / 86.0%±4.0% (T4) — gap +6.7%/+8.7%.
-4. **Hybrid Mamba-2 giảm sai số tích lũy so với AR ở H=5:** 94.7%±3.1% vs 88.0%±4.0%. Ở H=10,20 cả hai giảm mạnh — xác nhận giới hạn chung của latent world model [2].
-
-Hybrid Mamba-2+Attention là lựa chọn engineering đúng: trạng thái rời rạc giải quyết nhiễu × ODE mà vẫn giữ lợi thế thời gian so với AR không trạng thái. CEM planning chậm hơn LeWM ~2.5× (5090) do Mamba-2 kernel chưa tối ưu cho T4 — trade-off chấp nhận được để đổi lấy +8.7% performance.
+Trọn bộ ba đóng góp — Scheduled Sampling cho CfC (29×), phát hiện SIGReg × ODE, kiến trúc lai block-level — được trình bày ở §1 và chi tiết ở §4-§6. Trong viễn cảnh triển khai, CEM planning chậm ~2.5× (RTX 5090) là trade-off có thể chấp nhận được để đổi lấy độ chính xác cao hơn, và được khắc phục một phần bằng chiến lược thay solver bằng phản xạ nhanh (CfC-habit) ở hướng tiếp nối §7.2.
 
 ### 7\.2\. Hướng nghiên cứu tiếp nối: robot nhặt rác di động
 
@@ -328,7 +323,7 @@ Kết quả của nghiên cứu mở ra hướng ứng dụng thực tế lớn 
 <p align="center">
   <img src="hinh/fig_h_robot.png" width="92%" style="border:1px solid #ddd; border-radius:4px;">
   <br>
-  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác di động — hướng nghiên cứu tiếp nối. Cảm biến: camera ảnh MJPEG, áp lực và góc khớp từ servo, định vị LiDAR + IMU. Bộ não: nhận diện rác, phản xạ CfC-habit, kiểm chứng 1 bước, nhận biết điều lạ (OOD). An toàn: SI giữ trọng số (không quên), học 2 kênh, α theo OOD. Nguồn: 2 cụm 3S, 2 buck 5V, L298N.</em>
+  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác — hướng nghiên cứu tiếp nối. Camera → MobileNetV2 (nhận diện rác) → CfC-habit (phản xạ) và CfC-imagination (mô hình 1 bước); LiDAR+IMU → EKF → Nav2 (định vị, di chuyển); Servo SC09 (góc + lực — tín hiệu grasp). OOD gate so với z_goal sinh α = sigmoid(OOD) để trộn hành động với điều khiển giải tích. Mũi tên đứt nét = luồng cập nhật khi học: SI giữ trọng số, Kênh A tự học (SUCCESS qua tín hiệu SC09), Kênh B teleop. Phần cứng: khung chassis, 2 cụm 3S, 2 buck 5V, L298N.</em>
 </p>
 
 Bản thiết kế tận dụng ba kết quả chính của nghiên cứu:
