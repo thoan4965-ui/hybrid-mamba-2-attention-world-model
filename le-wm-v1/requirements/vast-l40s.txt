@@ -1,0 +1,22 @@
+# === LeWM Hybrid V1 — Vast L40S ===
+# Template: vastai/pytorch:2.12.0-cu126-cuda-12.9-mini-py312
+# Pre-installed: torch 2.12.0, torchvision, CUDA 12.9, Python 3.12
+
+# Core (LeWM dependencies via stable-worldmodel)
+stable-worldmodel[train]==0.1.1
+
+# CfC ODE
+ncps==1.1.2
+
+# Data
+h5py==3.13.0
+hdf5plugin==5.0.0
+
+# HuggingFace upload
+huggingface_hub==0.30.1
+
+# Config
+hydra-core==1.3.2
+
+# System (apt-get)
+# zstd

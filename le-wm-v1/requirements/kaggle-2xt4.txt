@@ -1,0 +1,12 @@
+# === LeWM Hybrid V1 — Kaggle 2×T4 ===
+# Kaggle image: Python 3.10, CUDA 12.x, torch 2.x (pre-installed)
+# Note: precision=16-mixed (T4 ko có BF16), SIGReg overflow possible
+
+stable-worldmodel[train]==0.1.1
+ncps==1.1.2
+h5py==3.13.0
+hdf5plugin==5.0.0
+huggingface_hub==0.30.1
+hydra-core==1.3.2
+
+# apt-get: zstd

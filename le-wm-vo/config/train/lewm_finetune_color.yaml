@@ -1,0 +1,46 @@
+defaults:
+  - _self_
+  - launcher: local
+  - data: bionic_hand_v3_96_aug
+  - model: vit_tiny_cfc_v3
+
+output_model_name: lewm_finetune_color
+subdir: ${hydra:job.id}
+ckpt_path: null
+pretrained_weights_path: /content/drive/MyDrive/Bionic_Hand_LWM/checkpoints/vit_cfc_v4_epoch_30.ckpt
+
+num_workers: 2
+train_split: 0.9
+seed: 3072
+img_size: 96
+embed_dim: 32
+history_size: 3
+augmentation: False  # Data đã augment sẵn (bg replace + ColorJitter) ở augment_h5.py
+
+trainer:
+  max_epochs: 50
+  devices: auto
+  accelerator: gpu
+  precision: 16
+  gradient_clip_val: 1.0
+
+loader:
+  batch_size: 32
+  num_workers: ${num_workers}
+  persistent_workers: True
+  prefetch_factor: 3
+  pin_memory: True
+
+optimizer:
+  type: AdamW
+  lr: 3e-4
+  weight_decay: 1e-3
+
+num_preds: 3
+
+loss:
+  sigreg:
+    weight: 0.05
+    kwargs:
+      knots: 9
+      num_proj: 256

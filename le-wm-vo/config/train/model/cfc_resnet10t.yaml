@@ -1,0 +1,42 @@
+_target_: jepa.JEPA
+
+encoder:
+  _target_: module.ResNet10tEncoder
+  pretrained: true
+  freeze_early_layers: true
+
+predictor:
+  _target_: module.CfCPredictor
+  num_frames: ${history_size}
+  input_dim: ${embed_dim}
+  hidden_dim: ${embed_dim}
+  output_dim: ${embed_dim}
+  action_dim: ${embed_dim}
+  backbone_activation: silu
+  backbone_units: 256
+  backbone_layers: 2
+  backbone_dr: 0.1
+  use_mixed: false
+
+action_encoder:
+  _target_: module.Embedder
+  input_dim: ???
+  emb_dim: ${embed_dim}
+
+projector:
+  _target_: module.MLP
+  input_dim: 512 # ResNet10t features output
+  output_dim: ${embed_dim}
+  hidden_dim: 2048
+  norm_fn:
+    _target_: torch.nn.BatchNorm1d
+    _partial_: true
+
+pred_proj:
+  _target_: module.MLP
+  input_dim: ${embed_dim}
+  output_dim: ${embed_dim}
+  hidden_dim: 2048
+  norm_fn:
+    _target_: torch.nn.BatchNorm1d
+    _partial_: true

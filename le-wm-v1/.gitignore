@@ -1,0 +1,22 @@
+# Dataset
+*.h5
+
+# Checkpoints
+*.ckpt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.venv/
+venv/
+.env
+
+# V0 outputs
+v0/le-wm-vo/outputs/
+
+# OS
+.DS_Store
+Thumbs.db

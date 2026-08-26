@@ -1,0 +1,42 @@
+defaults:
+  - _self_
+  - launcher: local
+  - data: tworoom
+  - model: hybrid
+
+output_model_name: lewm_hybrid
+subdir: lambda_0_09
+
+train_split: 0.9
+seed: 3072
+img_size: 224
+embed_dim: 192
+history_size: 3
+
+trainer:
+  max_epochs: 10
+  devices: auto
+  accelerator: gpu
+  precision: 16-mixed
+  gradient_clip_val: 1.0
+
+loader:
+  batch_size: 128
+  num_workers: 2
+  pin_memory: True
+  persistent_workers: True
+  prefetch_factor: 3
+
+optimizer:
+  type: AdamW
+  lr: 5e-5
+  weight_decay: 1e-3
+
+num_preds: 1
+
+loss:
+  sigreg:
+    weight: 0.09
+    kwargs:
+      knots: 17
+      num_proj: 1024

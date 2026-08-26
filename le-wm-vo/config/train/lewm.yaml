@@ -1,0 +1,46 @@
+defaults:
+  - _self_
+  - launcher: local
+  - data: bionic_hand_v3_96
+  - model: vit_tiny_cfc
+
+output_model_name: lewm
+subdir: ${hydra:job.id}
+ckpt_path: null
+pretrained_weights_path: null
+
+num_workers: 2
+train_split: 0.9
+seed: 3072
+img_size: 96
+embed_dim: 32
+history_size: 3
+
+trainer:
+  max_epochs: 100
+  devices: auto
+  accelerator: gpu
+  precision: 16
+  gradient_clip_val: 1.0
+
+loader:
+  batch_size: 32
+  num_workers: ${num_workers}
+  persistent_workers: True
+  prefetch_factor: 3
+  pin_memory: True
+
+# ... (giữ nguyên mặc định các phần khác)
+optimizer:
+  type: AdamW
+  lr: 5e-5
+  weight_decay: 1e-3
+
+num_preds: 3 # Ép mô hình dự đoán đa bước tự hồi quy để chặn học vẹt
+
+loss:
+  sigreg:
+    weight: 0.05
+    kwargs:
+      knots: 9
+      num_proj: 256

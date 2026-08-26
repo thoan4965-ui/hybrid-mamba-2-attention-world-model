@@ -1,0 +1,31 @@
+_target_: jepa.JEPA
+
+encoder:
+  _target_: module.TinyViT
+  img_size: 96
+  patch_size: 8
+  num_layers: 4
+  hidden_dim: 64
+  num_heads: 4
+  mlp_dim: 256
+  output_dim: 32
+
+predictor:
+  _target_: module.CfCPredictorV2
+  num_frames: ${history_size}
+  input_dim: 32
+  hidden_dim: 64
+  output_dim: 32
+  action_dim: 32
+  backbone_layers: 1
+  backbone_units: 64
+
+action_encoder:
+  _target_: module.Embedder
+  input_dim: ???
+  smoothed_dim: 8
+  emb_dim: 32
+  mlp_scale: 2
+
+projector: null
+pred_proj: null

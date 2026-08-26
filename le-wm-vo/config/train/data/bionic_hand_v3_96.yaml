@@ -1,0 +1,9 @@
+dataset:
+  num_steps: ${eval:'${num_preds} + ${history_size}'}
+  frameskip: 3 # Tăng lên 3 để triệt tiêu hoàn toàn hiện tượng học vẹt sao chép ảnh cũ
+  name: d:/ai_training/bionic_hand_dataset_v3_96.h5
+  keys_to_load:
+    - pixels
+    - action
+  keys_to_cache:
+    - action

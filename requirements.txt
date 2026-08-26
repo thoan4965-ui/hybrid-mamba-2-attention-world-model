@@ -1,0 +1,11 @@
+# Python >= 3.10, CUDA GPU (Linux)
+torch>=2.1
+torchvision>=0.16
+hydra-core
+huggingface_hub
+mamba-ssm>=2.0
+hdf5plugin
+shapely
+pymunk
+pygame
+numpy
