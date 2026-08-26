@@ -138,7 +138,7 @@ Tôi xây dựng **tay bionic 8-DOF** từ servo SC09, khung in 3D, camera webca
 | Chuyển đổi | USB-UART adapter | UART ↔ USB + cấp nguồn servo | Mua mới |
 | Nguồn | 3×18650 | Qua mạch hạ áp → 6V | Mua mới |
 
->Sẵn có và phổ biến trên thị trường — mô hình có thể tái lập dễ dàng, phù hợp cho học sinh tiếp cận học thuật.
+>Toàn bộ linh kiện mua được tại các cửa hàng điện tử thông thường — mô hình có thể tái lập với chi phí và dụng cụ hợp lý.
 
 <p align="center">
   <img src="hinh/fig_g.png" width="88%" style="border:1px solid #ddd; border-radius:4px;">
@@ -325,9 +325,9 @@ Hybrid Mamba-2+Attention là lựa chọn engineering đúng: trạng thái rờ
 Kết quả của nghiên cứu mở ra hướng ứng dụng thực tế lớn hơn: **robot nhặt rác di động** — bài toán có ý nghĩa xã hội và môi trường, được dự kiến triển khai trong thời gian tới.
 
 <p align="center">
-  <img src="hinh/fig_h_robot.png" width="100%" style="border:1px solid #ddd; border-radius:4px;">
+  <img src="hinh/fig_h_robot.png" width="92%" style="border:1px solid #ddd; border-radius:4px;">
   <br>
-  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác di động — hướng nghiên cứu tiếp nối</em>
+  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác di động — hướng nghiên cứu tiếp nối. Cảm biến: camera ảnh MJPEG, áp lực và góc khớp từ servo, định vị LiDAR + IMU. Bộ não: nhận diện rác, phản xạ CfC-habit, kiểm chứng 1 bước, nhận biết điều lạ (OOD). An toàn: SI giữ trọng số (không quên), học 2 kênh, α theo OOD. Nguồn: 2 cụm 3S, 2 buck 5V, L298N.</em>
 </p>
 
 Bản thiết kế tận dụng ba kết quả chính của nghiên cứu:

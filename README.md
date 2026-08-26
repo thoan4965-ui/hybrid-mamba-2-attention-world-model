@@ -1,8 +1,6 @@
 # Hybrid Mamba-2+Attention World Model cho robot manipulation
 
-**Dự án đạt Giải cuộc thi Sáng tạo thanh thiếu niên nhi đồng tỉnh Đắk Lắk và được chọn tham dự Cuộc thi Sáng tạo toàn quốc lần thứ 22 (2026).**
-
-Kiến trúc lai block-level cho bộ dự đoán JEPA world model: thay MLP không trạng thái (LeWM AR) bằng **Mamba-2 trạng thái rời rạc** — vừa giữ lợi thế temporal, vừa không khuếch đại nhiễu.
+Nghiên cứu kiến trúc lai cho bộ dự đoán JEPA world model: thay MLP không trạng thái (LeWM AR) bằng **Mamba-2 trạng thái rời rạc** — vừa giữ lợi thế temporal, vừa không khuếch đại nhiễu.
 
 **Kết quả chính:**
 
@@ -53,3 +51,12 @@ python eval.py --config-name=pusht policy=<ckpt> --seed=3072
 - [3] Hasani, R. et al. (2022). Closed-form Continuous-time Neural Networks. Nature Machine Intelligence.
 - [4] Dao, T. & Gu, A. (2024). Transformers are SSMs. ICML 2024.
 - [5] Balestriero, R. & LeCun, Y. (2025). LeJEPA. arXiv 2511.08544.
+- [6] Ma, C. & Najarian, K. (2025). Rethinking the long-range dependency in Mamba/SSM and transformer models. arXiv 2509.04226.
+- [7] Huang, Y. (2026). VJEPA: Variational Joint Embedding Predictive Architectures as Probabilistic World Models. arXiv 2601.14354.
+- [8] Gu, A. & Dao, T. (2023). Mamba: Linear-Time Sequence Modeling with Selective State Spaces. arXiv 2312.00752.
+- [9] Lieber, O. et al. (2024). Jamba: A Hybrid Transformer-Mamba Language Model.
+- [10] Li, Y. et al. (2026). TransMamba: A Sequence-Level Hybrid Transformer-Mamba Language Model. AAAI 2026.
+- [11] Liu, X. et al. (2020). Neural SDE: Stabilizing Neural ODE Networks with Stochasticity. NeurIPS 2020.
+- [12] Rob Knight (2022). DexHand V1.0: Open-Source Dexterous Humanoid Robot Hand. GitHub.
+- [13] MambaLite-Micro (2025). Mamba LLM trên MCU với INT4 quantization. arXiv 2509.05488.
+- [14] Quamba: Post-training quantization INT8 cho Mamba/SSM triển khai edge.
