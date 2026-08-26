@@ -293,7 +293,7 @@ Kết quả của Hybrid nằm trong khoảng tin cậy chồng lấp với số
 
 ### 6\.4\. Hạn chế
 
-1. **CEM solve time:** ~85s/ep vs LeWM ~20s/ep trên T4 (chậm ~4×) và ~107s vs ~43s/50ep trên RTX 5090 (chậm ~2.5×) — đã đo trên 2 GPU, cùng seed và cấu hình. Đây là trade-off thực tế của Mamba-2 Triton kernel so với attention kernel đã tối ưu sẵn của LeWM; code chưa dùng torch.compile — còn dư địa tối ưu.
+1. **CEM solve time:** ~85s/ep vs LeWM ~20s/ep trên T4 (chậm ~4×) và ~107s vs ~43s/50ep trên RTX 5090 (chậm ~2.5×) — đã đo trên 2 GPU, cùng seed và cấu hình. Đây là trade-off thực tế của Mamba-2 Triton kernel so với attention kernel đã tối ưu sẵn của LeWM. Dư địa cải thiện: (i) dùng torch.compile để biên dịch tổng mô hình; (ii) chỉnh Mamba-2 kernel cho GPU cụ thể; (iii) hướng triển khai §7.2 bỏ hẳn solver, thay bằng phản xạ 1 forward (vài ms).
 2. **Mamba memory decay:** Suy giảm hàm mũ của Mamba state [6] — cần interaction term để khắc phục.
 3. **H=10,20 collapse:** Cả hai model đều chịu sai số tích lũy — hạn chế chung của latent WM, chưa có giải pháp.
 4. **TwoRoom variance cao:** Std ±10.1% (Hybrid) và ±10.3% (LeWM) với 3 seeds. Cần thêm seeds để khẳng định xu hướng.
@@ -323,13 +323,17 @@ Kết quả của nghiên cứu mở ra hướng ứng dụng thực tế lớn 
 <p align="center">
   <img src="hinh/fig_h_robot.png" width="92%" style="border:1px solid #ddd; border-radius:4px;">
   <br>
-  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác — hướng nghiên cứu tiếp nối. Camera → MobileNetV2 (nhận diện rác) → CfC-habit (phản xạ) và CfC-imagination (mô hình 1 bước); LiDAR+IMU → EKF → Nav2 (định vị, di chuyển); Servo SC09 (góc + lực — tín hiệu grasp). OOD gate so với z_goal sinh α = sigmoid(OOD) để trộn hành động với điều khiển giải tích. Mũi tên đứt nét = luồng cập nhật khi học: SI giữ trọng số, Kênh A tự học (SUCCESS qua tín hiệu SC09), Kênh B teleop. Phần cứng: khung chassis, 2 cụm 3S, 2 buck 5V, L298N.</em>
+  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác — hướng nghiên cứu tiếp nối. Camera → MobileNetV2 (nhận diện rác) → HOMING (u\*, v\*, s\* — căn chỉnh điểm grasp); LiDAR+IMU → EKF → Nav2 (định vị, di chuyển); Servo SC09 (góc + lực — tín hiệu thành công). CfC-habit (phản xạ) + CfC-imagination (verifier mô hình 1 bước); OOD gate so với z_goal (cố định) sinh α = sigmoid(OOD) → pha trộn với điều khiển giải tích. Mũi tên đứt nét = luồng cập nhật khi học: SI giữ trọng số, Kênh A tự học (SUCCESS qua SC09), Kênh B teleop. Phần cứng: khung chassis, 2 cụm 3S, 2 buck 5V, L298N.</em>
 </p>
 
 Bản thiết kế tận dụng ba kết quả chính của nghiên cứu:
 - **CfC-habit (phản xạ)** — học lệnh điều khiển từ người, tạo bộ điều khiển phản xạ nhanh thay cho CEM solver nặng (mô hình 16.6M tham số này đã học trên robot thật ở V0);
 - **CfC-imagination (mô hình 1 bước)** — đúc kết từ chính mô hình dự đoán thế giới trong nghiên cứu, dùng để "cuộn phim trước" kiểm chứng hành động;
 - **OOD gate (tự biết lạ)** — đưa phát hiện SIGReg×ODE vào ứng dụng thực tế: robot tự nhận biết trạng thái ngoài phân phối và điều chỉnh độ tin cậy.
+
+Chuỗi vận hành: robot tìm rác (SEARCH) → di chuyển tới gần (NAV) → căn chỉnh điểm grasp bằng homing (ALIGN) → hạ tay và khép kẹp với 4 mức xác nhận (GRASP: camera thấy rác tại điểm cố định → tín hiệu lực và góc khớp từ servo → giám sát khi nâng) → bỏ rác vào thùng (LIFT + DROP).
+
+Khi gặp dữ liệu lạ, hệ thống tuần theo 5 bước: (1) nhận ra lạ — OOD và mô hình kiểm chứng cùng báo động; (2) an toàn — α giảm về 0, robot chuyển sang điều khiển giải tích thuần và thử lại; (3) học lại — cập nhật cục bộ từ kênh tự động (các lần thành công) kèm giữ trọng số gần bản gốc; (4) quen dần — ngưỡng nhận biết lạ tăng lên, độ tin cậy α phục hồi dần; (5) mù hẳn — robot kêu gọi người thao tác, không bao giờ hỏng im lặng. Mục tiêu z_goal và phần thân cơ sở cố định trong suốt quá trình học.
 
 Bản thiết kế này là **hướng nghiên cứu tiếp nối** — kêu gọi khai thác thực nghiệm trên nền robot thật, và thể hiện tính liên tục của hành trình nghiên cứu (từ V0 robot tay thật → V2.1 đạt chuẩn benchmark → V2.5.2 đẩy vào ứng dụng thực tế).
 
