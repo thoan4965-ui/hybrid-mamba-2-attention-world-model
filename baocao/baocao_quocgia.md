@@ -321,7 +321,7 @@ Kết quả của nghiên cứu mở ra hướng ứng dụng thực tế lớn 
 <p align="center">
   <img src="hinh/fig_h_robot.png" width="92%" style="border:1px solid #ddd; border-radius:4px;">
   <br>
-  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác — hướng nghiên cứu tiếp nối. Camera → MobileNetV2 (nhận diện rác) → HOMING (u\*, v\*, s\* — căn chỉnh điểm grasp); LiDAR+IMU → EKF → Nav2 (định vị, di chuyển); Servo SC09 (góc + lực — tín hiệu thành công). CfC-habit (phản xạ) + CfC-imagination (verifier mô hình 1 bước); OOD gate so với z_goal (cố định) sinh α = sigmoid(OOD) → pha trộn với điều khiển giải tích. Mũi tên đứt nét = luồng cập nhật khi học: SI giữ trọng số, Kênh A tự học (SUCCESS qua SC09), Kênh B teleop. Phần cứng: khung chassis, 2 cụm 3S, 2 buck 5V, L298N.</em>
+  <em><b>Hình H:</b> Sơ đồ khối hệ thống robot nhặt rác — hướng nghiên cứu tiếp nối. Camera → MobileNetV2 (nhận diện rác) → HOMING (u\*, v\*, s\* — căn chỉnh điểm grasp); LiDAR+IMU → EKF → Nav2 (định vị, di chuyển). CfC-habit (phản xạ) chồng CfC-imagination (mô hình 1 bước — kiểm chứng); một bộ ba cảm biến gồm camera pre-check và tín hiệu lực-góc từ servo tạo ra **mục tiêu z_goal cố định** (tâm các lần thành công) — OOD gate so sánh biểu diễn hiện tại, sinh α = sigmoid(OOD) để pha trộn hành động phản xạ với điều khiển giải tích. Mũi tên đứt nét = luồng cập nhật khi học: SI giữ trọng số, Kênh A tự học (SUCCESS qua SC09), Kênh B teleop. Phần cứng: khung chassis, 2 cụm 3S, 2 buck 5V, L298N.</em>
 </p>
 
 Bản thiết kế tận dụng ba kết quả chính của nghiên cứu:
