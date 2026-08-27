@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1240" width="1500" height="1240"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1060" width="1500" height="1060"
      font-family="Times New Roman, Times, serif">
 <defs>
   <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto">
@@ -6,118 +6,82 @@
   </marker>
 </defs>
 
-<!-- ============ HÀNG 1: CẢM BIẾN & CHẤP HÀNH (y=40, h=100) — 2 nhánh độc lập ============ -->
-<rect x="30"   y="40"  width="190" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
-<text x="125"  y="82"  text-anchor="middle" font-size="20" fill="#1c2431">S3-CAM ESP32-S3</text>
-<text x="125"  y="110" text-anchor="middle" font-size="16" fill="#333">(OV3660 — ảnh MJPEG)</text>
+<!-- ======== TẦNG 1: NHẬN DIỆN (y=40, h=100) ======== -->
+<rect x="450" y="40" width="600" height="100" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
+<text x="750" y="84" text-anchor="middle" font-size="26" fill="#1c2431">Nhận diện rác (MobileNetV2)</text>
+<text x="750" y="118" text-anchor="middle" font-size="21" fill="#333">(vị trí + kích thước rác — cố định)</text>
 
-<rect x="245"  y="40"  width="190" height="100" rx="14" fill="#e0f2fe" stroke="#0e7490" stroke-width="3"/>
-<text x="340"  y="82"  text-anchor="middle" font-size="20" fill="#1c2431">combo ESP32-S3</text>
-<text x="340"  y="110" text-anchor="middle" font-size="15" fill="#333">(MCU — LiDAR/IMU +</text>
-<text x="340"  y="127" text-anchor="middle" font-size="15" fill="#333">L298N + SC09 + AP)</text>
+<!-- ======== TẦNG 2: CĂN CHỈNH (y=230, h=110) ======== -->
+<rect x="450" y="230" width="600" height="110" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
+<text x="750" y="278" text-anchor="middle" font-size="26" fill="#1c2431">Căn chỉnh điểm kẹp (homing)</text>
+<text x="750" y="312" text-anchor="middle" font-size="21" fill="#333">(so với vị trí kẹp chuẩn → sai số e)</text>
 
-<rect x="460"  y="40"  width="190" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
-<text x="555"  y="82"  text-anchor="middle" font-size="20" fill="#1c2431">LiDAR X1</text>
-<text x="555"  y="110" text-anchor="middle" font-size="16" fill="#333">(UART → combo)</text>
+<!-- ======== TẦNG 3: BỘ NÃO (y=440, h=130) ======== -->
+<rect x="80"   y="440" width="340" height="130" rx="14" fill="#f5f5f5" stroke="#555" stroke-width="3"/>
+<text x="250"  y="494" text-anchor="middle" font-size="26" fill="#1c2431">Điều khiển cơ bản</text>
+<text x="250"  y="530" text-anchor="middle" font-size="21" fill="#333">(toán đơn giản, đúng — cứng nhắc)</text>
 
-<rect x="675"  y="40"  width="190" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
-<text x="770"  y="82"  text-anchor="middle" font-size="20" fill="#1c2431">IMU MPU6050</text>
-<text x="770"  y="110" text-anchor="middle" font-size="16" fill="#333">(I2C → combo)</text>
+<rect x="460"  y="440" width="340" height="130" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
+<text x="630"  y="494" text-anchor="middle" font-size="26" fill="#1c2431">Phản xạ (CfC-habit)</text>
+<text x="630"  y="530" text-anchor="middle" font-size="21" fill="#333">(học từ người điều khiển: bù sai số)</text>
 
-<rect x="890"  y="40"  width="190" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
-<text x="985"  y="82"  text-anchor="middle" font-size="20" fill="#1c2431">SC09 ×3</text>
-<text x="985"  y="110" text-anchor="middle" font-size="16" fill="#333">(S2, S3, grip — load + góc)</text>
+<rect x="840"  y="440" width="340" height="130" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
+<text x="1010" y="494" text-anchor="middle" font-size="26" fill="#1c2431">Dự đoán bước sau (CfC)</text>
+<text x="1010" y="530" text-anchor="middle" font-size="21" fill="#333">(thử lệnh trước khi gửi)</text>
 
-<rect x="1105" y="40"  width="190" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
-<text x="1200" y="82"  text-anchor="middle" font-size="20" fill="#1c2431">L298N ×2</text>
-<text x="1200" y="110" text-anchor="middle" font-size="16" fill="#333">→ 2 motor 110 RPM</text>
+<rect x="1220" y="440" width="250" height="130" rx="14" fill="#f5f5f5" stroke="#555" stroke-width="3"/>
+<text x="1345" y="494" text-anchor="middle" font-size="26" fill="#1c2431">Mục tiêu thành công</text>
+<text x="1345" y="530" text-anchor="middle" font-size="21" fill="#333">(tâm các lần thành</text>
+<text x="1345" y="554" text-anchor="middle" font-size="21" fill="#333">công — cố định)</text>
 
-<rect x="1320" y="40"  width="150" height="100" rx="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="3"/>
-<text x="1395" y="82"  text-anchor="middle" font-size="18" fill="#1c2431">Nguồn</text>
-<text x="1395" y="108" text-anchor="middle" font-size="15" fill="#333">2 ×3S</text>
-<text x="1395" y="126" text-anchor="middle" font-size="15" fill="#333">2 buck 5V + fuse</text>
+<!-- mũi: nhận diện → căn chỉnh ; căn chỉnh → 3 bộ não (elbow 90°) -->
+<line x1="750" y1="140" x2="750" y2="225" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="250" y1="340" x2="250" y2="390" stroke="#ea580c" stroke-width="3.5"/>
+<line x1="250" y1="390" x2="1010" y2="390" stroke="#ea580c" stroke-width="3.5"/>
+<line x1="250" y1="390" x2="250" y2="435" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="630" y1="390" x2="630" y2="435" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="1010" y1="390" x2="1010" y2="435" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
 
-<!-- ============ HÀNG 2: XỬ LÝ (y=300, h=100) ============ -->
-<rect x="30"   y="300" width="240" height="100" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
-<text x="150"  y="342" text-anchor="middle" font-size="20" fill="#1c2431">MobileNetV2</text>
-<text x="150"  y="370" text-anchor="middle" font-size="16" fill="#333">(detect rác — backbone đóng băng)</text>
+<!-- ======== TẦNG 4: TRỘN + CỔNG (y=650, h=110) ======== -->
+<rect x="80"   y="650" width="660" height="110" rx="14" fill="#ffffff" stroke="#ea580c" stroke-width="3"/>
+<text x="410"  y="692" text-anchor="middle" font-size="26" fill="#1c2431">Trộn lệnh</text>
+<text x="410"  y="726" text-anchor="middle" font-size="21" fill="#333">(α·phản xạ + (1−α)·điều khiển cơ bản)</text>
 
-<rect x="320"  y="300" width="240" height="100" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
-<text x="440"  y="342" text-anchor="middle" font-size="20" fill="#1c2431">HOMING</text>
-<text x="440"  y="370" text-anchor="middle" font-size="16" fill="#333">(u,v,s so với u*,v*,s*)</text>
+<rect x="780"  y="650" width="340" height="110" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="3"/>
+<text x="950"  y="692" text-anchor="middle" font-size="26" fill="#1c2431">Cổng nhận biết lạ (OOD)</text>
+<text x="950"  y="726" text-anchor="middle" font-size="21" fill="#333">(càng lệch Mục tiêu → α càng nhỏ)</text>
 
-<rect x="610"  y="300" width="300" height="100" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
-<text x="760"  y="342" text-anchor="middle" font-size="20" fill="#1c2431">EKF → /odom</text>
-<text x="760"  y="370" text-anchor="middle" font-size="16" fill="#333">(vị trí 50Hz) → Nav2</text>
+<!-- mũi: não → trộn (thẳng) -->
+<line x1="250" y1="570" x2="250" y2="645" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="630" y1="570" x2="630" y2="645" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
+<!-- α: cổng → trộn (ngang ngắn) -->
+<line x1="778" y1="705" x2="742" y2="705" stroke="#dc2626" stroke-width="3.5" marker-end="url(#m)"/>
+<!-- dự đoán → cổng (elbow) ; mục tiêu → cổng (elbow) -->
+<line x1="1010" y1="570" x2="1010" y2="630" stroke="#555" stroke-width="3"/>
+<line x1="1010" y1="630" x2="950" y2="630" stroke="#555" stroke-width="3"/>
+<line x1="950"  y1="630" x2="950" y2="645" stroke="#555" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="1345" y1="570" x2="1345" y2="615" stroke="#555" stroke-width="3"/>
+<line x1="1345" y1="615" x2="1075" y2="615" stroke="#555" stroke-width="3"/>
+<line x1="1075" y1="615" x2="1075" y2="645" stroke="#555" stroke-width="3.5" marker-end="url(#m)"/>
 
-<!-- mũi: nhánh ① ảnh (S3-CAM↓MobileNetV2, MobileNetV2→HOMING) -->
-<line x1="125" y1="140" x2="125" y2="295" stroke="#2563eb" stroke-width="3.5" marker-end="url(#m)"/>
-<line x1="270" y1="350" x2="315" y2="350" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
+<!-- ======== TẦNG 5: HỌC & AN TOÀN (y=850, h=150) ======== -->
+<rect x="80"   y="850" width="280" height="150" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
+<text x="220"  y="904" text-anchor="middle" font-size="26" fill="#1c2431">Giữ ổn định (SI)</text>
+<text x="220"  y="942" text-anchor="middle" font-size="21" fill="#333">(chống quên</text>
+<text x="220"  y="966" text-anchor="middle" font-size="21" fill="#333">khi học điều mới)</text>
 
-<!-- mũi: nhánh ② định vị (LiDAR↓EKF, IMU↓EKF) -->
-<line x1="555" y1="140" x2="555" y2="295" stroke="#2563eb" stroke-width="3.5" marker-end="url(#m)"/>
-<line x1="770" y1="140" x2="770" y2="295" stroke="#2563eb" stroke-width="3.5" marker-end="url(#m)"/>
+<rect x="390"  y="850" width="280" height="150" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
+<text x="530"  y="904" text-anchor="middle" font-size="26" fill="#1c2431">Kênh A — tự học</text>
+<text x="530"  y="942" text-anchor="middle" font-size="21" fill="#333">(từ các lần gắp</text>
+<text x="530"  y="966" text-anchor="middle" font-size="21" fill="#333">thành công)</text>
 
-<!-- ============ HÀNG 3: BỘ NÃO (y=520, h=110) ============ -->
-<rect x="30"   y="520" width="240" height="110" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
-<text x="150"  y="560" text-anchor="middle" font-size="20" fill="#1c2431">CfC-habit</text>
-<text x="150"  y="588" text-anchor="middle" font-size="16" fill="#333">(phản xạ — Δv, Δω</text>
-<text x="150"  y="608" text-anchor="middle" font-size="16" fill="#333">residual)</text>
+<rect x="700"  y="850" width="280" height="150" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
+<text x="840"  y="904" text-anchor="middle" font-size="26" fill="#1c2431">Kênh B — thao tác mẫu</text>
+<text x="840"  y="942" text-anchor="middle" font-size="21" fill="#333">(người điều khiển thử</text>
+<text x="840"  y="966" text-anchor="middle" font-size="21" fill="#333">10 lần khi gặp điều lạ)</text>
 
-<rect x="320"  y="520" width="240" height="110" rx="14" fill="#fffbeb" stroke="#ea580c" stroke-width="3"/>
-<text x="440"  y="560" text-anchor="middle" font-size="20" fill="#1c2431">CfC-imagination</text>
-<text x="440"  y="588" text-anchor="middle" font-size="16" fill="#333">((h, lệnh) → h t+1</text>
-<text x="440"  y="608" text-anchor="middle" font-size="16" fill="#333">verifier chọn lệnh)</text>
-
-<rect x="610"  y="520" width="240" height="110" rx="14" fill="#f5f5f5" stroke="#555" stroke-width="3"/>
-<text x="730"  y="560" text-anchor="middle" font-size="20" fill="#1c2431">OOD gate</text>
-<text x="730"  y="588" text-anchor="middle" font-size="16" fill="#333">(z − z_goal)</text>
-<text x="730"  y="608" text-anchor="middle" font-size="16" fill="#333">α = sigmoid((OOD−1.5)×2)</text>
-
-<rect x="890"  y="520" width="240" height="110" rx="14" fill="#f5f5f5" stroke="#555" stroke-width="3"/>
-<text x="1010" y="560" text-anchor="middle" font-size="20" fill="#1c2431">z_goal</text>
-<text x="1010" y="588" text-anchor="middle" font-size="16" fill="#333">(centroid latent</text>
-<text x="1010" y="608" text-anchor="middle" font-size="16" fill="#333">SUCCESS — offline, đóng băng)</text>
-
-<rect x="1170" y="520" width="300" height="110" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="3"/>
-<text x="1320" y="560" text-anchor="middle" font-size="20" fill="#1c2431">GRASP confirm</text>
-<text x="1320" y="588" text-anchor="middle" font-size="16" fill="#333">(4 tầng — SC09 load + góc,</text>
-<text x="1320" y="608" text-anchor="middle" font-size="16" fill="#333">lift monitor)</text>
-
-<!-- mũi: MobileNetV2↓CfC-habit · HOMING↓CfC-imagination · z_goal→OOD -->
-<line x1="150" y1="400" x2="150" y2="515" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
-<line x1="440" y1="400" x2="440" y2="515" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
-<line x1="1140" y1="575" x2="855" y2="575" stroke="#555" stroke-width="3.5" marker-end="url(#m)"/>
-<!-- SC09 thẳng XUỐNG GRASP confirm (dọc phải, không xuyên z_goal/OOD) -->
-<line x1="1320" y1="140" x2="1320" y2="515" stroke="#dc2626" stroke-width="3" marker-end="url(#m)"/>
-
-<!-- ============ HÀNG 4: PHA TRỘN (y=700, h=90) ============ -->
-<rect x="80"   y="700" width="1000" height="90" rx="14" fill="#ffffff" stroke="#ea580c" stroke-width="3"/>
-<text x="580"  y="748" text-anchor="middle" font-size="21" fill="#1c2431">Pha trộn:  α·habit + (1−α)·analytic → căn chỉnh ALIGN theo (u*,v*,s*)</text>
-
-<!-- mũi: CfC-habit↓Pha trộn · OOD↓Pha trộn -->
-<line x1="150" y1="630" x2="150" y2="695" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
-<line x1="730" y1="630" x2="730" y2="695" stroke="#ea580c" stroke-width="3.5" marker-end="url(#m)"/>
-
-<!-- ============ HÀNG 5: HỌC AN TOÀN (y=850, h=100) — không mũi (chú thích) ============ -->
-<rect x="80"   y="850" width="320" height="100" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
-<text x="240"  y="890" text-anchor="middle" font-size="20" fill="#1c2431">SI</text>
-<text x="240"  y="918" text-anchor="middle" font-size="16" fill="#333">(λ Σω(W−W₀)² — chống quên)</text>
-
-<rect x="430"  y="850" width="320" height="100" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
-<text x="590"  y="890" text-anchor="middle" font-size="20" fill="#1c2431">Kênh A — tự học</text>
-<text x="590"  y="918" text-anchor="middle" font-size="16" fill="#333">(SUCCESS qua SC09-lọc)</text>
-
-<rect x="780"  y="850" width="320" height="100" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
-<text x="940"  y="890" text-anchor="middle" font-size="20" fill="#1c2431">Kênh B — teleop</text>
-<text x="940"  y="918" text-anchor="middle" font-size="16" fill="#333">(10 tập — người thao tác)</text>
-
-<rect x="1130" y="850" width="340" height="100" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
-<text x="1300" y="890" text-anchor="middle" font-size="18" fill="#1c2431">CẬP NHẬT khi OOD cao</text>
-<text x="1300" y="918" text-anchor="middle" font-size="15" fill="#333">habit + imagination + detect</text>
-<text x="1300" y="936" text-anchor="middle" font-size="15" fill="#333">head (SI) — z_goal, σ,</text>
-
-<!-- ============ HÀNG 6: MÁY TRẠNG THÁI (y=1030, h=90) — không mũi chạm ============ -->
-<rect x="80"  y="1030" width="1390" height="90" rx="14" fill="#ffffff" stroke="#888" stroke-width="2.5"/>
-<text x="775" y="1080" text-anchor="middle" font-size="22" fill="#333">MÁY TRẠNG THÁI:  SEARCH → NAV → ALIGN (homing) → GRASP (4 tầng) → LIFT → DROP</text>
+<rect x="1010" y="850" width="460" height="150" rx="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
+<text x="1240" y="904" text-anchor="middle" font-size="26" fill="#1c2431">Học khi gặp trường hợp lạ</text>
+<text x="1240" y="942" text-anchor="middle" font-size="21" fill="#333">(kèm giữ ổn định. Không đổi bao giờ:</text>
+<text x="1240" y="966" text-anchor="middle" font-size="21" fill="#333">Mục tiêu, điều khiển cơ bản, ngưỡng lạ)</text>
 </svg>
