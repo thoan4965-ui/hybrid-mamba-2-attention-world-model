@@ -34,9 +34,9 @@ Tuy nhiên, khi đưa CfC vào kiến trúc JEPA, vấn đề phát sinh — kh�
 
 **Ba đóng góp chính:**
 
-1. **Scheduled Sampling cho CfC** — cải thiện chuỗi dự đoán 29 lần. Theo tra cứu của tôi, chưa có công bố nào áp dụng Scheduled Sampling cho ODE-RNN/CfC trước đây.
-2. **Phát hiện SIGReg × ODE** — chỉ ra tương tác xấu giữa SIGReg và trạng thái ODE. Hybrid CfC+Attention (V1) đạt 78% ở goal=25 (budget 50), nhưng giảm còn 6% ở goal=100 (budget 150), phù hợp với phân tích SIGReg × ODE.
-3. **Kiến trúc lai block-level Mamba-2+Attention** (đóng góp chính) — 6×{Self-Attention → Mamba-2} trong **cùng một block**, khác Jamba [9] và TransMamba [10] vốn chỉ lai ghép ở mức layer; Mamba-2 với trạng thái rời rạc **lần đầu được sử dụng làm bộ dự đoán trong JEPA world model** thay cho MLP không trạng thái của LeWM. Kết quả: Push-T **94.7% ± 3.1%** (3 seeds), beat LeWM AR **88.0% ± 4.0%** trên cùng GPU RTX 5090 (+6.7%) và 86.0% ± 4.0% trên T4 (+8.7%). TwoRoom: 85.3% ± 10.1% (T4) / 86.0% ± 10.0% (5090).
+1. **Scheduled Sampling cho CfC-ODE-RNN** — kỹ thuật chưa được áp dụng cho loại mô hình này cho đến nay (chi tiết §4.1).
+2. **Phát hiện tương tác SIGReg × trạng thái ODE** — nhiễu chống-collapse bị khuếch đại bởi động học liên tục, nguyên nhân thất bại của kiến trúc lai đầu tiên (chi tiết §4.2).
+3. **Kiến trúc lai block-level Mamba-2+Attention** — Attention và SSM trong cùng một khối (Jamba/TransMamba chỉ lai ở mức tầng), lần đầu dùng Mamba-2 trạng thái rời rạc làm bộ dự đoán trong JEPA world model (kết quả §5).
 
 ***
 
@@ -178,13 +178,13 @@ Kết quả 78% (goal=25, budget 50) → 6% (goal=100, budget 150). CfC vẫn ch
 
 Thay CfC bằng Mamba-2 (trạng thái rời rạc, không khuếch đại nhiễu). Cùng kiến trúc 6×{Self-Attn → Mamba-2}, cùng loss MSE + λ·SIGReg, cùng config (trừ predictor). Huấn luyện 10 epoch trên Vast RTX 5090 (32GB VRAM), batch 128, bf16, ~5h.
 
-**TwoRoom:** Hybrid 3 seeds 84%, 76%, 96% — mean 85.3% ± 10.1% (T4) / 86.0% ± 10.0% (5090); LeWM official 78%, 72%, 92% — mean 80.7% ± 10.3% (T4) / 81.3% ± 9.5% (5090). Chênh lệch +4.6%/+4.7% nằm trong biên sai số thống kê. LeWM dùng history=1 [2], task Markovian — Hybrid T=4 không hiện lợi thế. (Chi tiết §5.1, §6.1)
-
-**Push-T:** 10 epoch, dataset 20K episode expert, RTX 5090 bf16; val_pred giảm từ 0.0083 (ep 3) → 0.0036 (ep 8). Kết quả 3 seeds trên T4: 94.7% ± 3.1% (92%, 98%, 94%), beat LeWM official 86.0% ± 4.0% (+8.7%). (Chi tiết §5.2)
+**Kết quả và so sánh trên 2 GPU (T4, RTX 5090), 3 seeds — trình bày tại §5** (TwoRoom §5.1, Push-T §5.2); kiến trúc lai block-level cũng là đóng góp chính đã tóm tắt tại §1.
 
 ***
 
 ## 5\. Kết quả
+
+*Kết quả dưới đây là số liệu chính của nghiên cứu — so sánh trong cùng điều kiện: cùng seed 3072/3073/3074, cùng cấu hình H=K=5, cùng eval.py; LeWM đối chiếu từ 3 nguồn (GitHub, local, paper).*
 
 ### 5\.1\. TwoRoom
 
@@ -249,12 +249,14 @@ LeWM paper [2] thừa nhận: *"auto-regressive rollouts accumulate prediction e
 
 ### 5\.5\. Thời gian giải kế hoạch bằng CEM
 
-| Model | First episode | Post-compile/ep | Ghi chú |
+| Model | GPU | First episode | Post-compile/ep |
 |---|---|---|---|
-| LeWM AR | ~98s (cuDNN init) | ~20s (T4) / ~43s/50ep (5090) | Attention kernel có sẵn |
-| Hybrid Mamba-2 | ~1160s (Triton compile) | ~85s (T4) / ~107s (5090) | Triton kernel compile lần đầu 20 phút |
+| LeWM AR (3 seeds) | T4 fp32 | ~98s (cuDNN init) | ~20s |
+| LeWM AR (3 seeds) | RTX 5090 | — | ~43s/50ep |
+| Hybrid Mamba-2 | T4 fp32 | ~1160s (Triton kernel compile lần đầu) | ~85s |
+| Hybrid Mamba-2 | RTX 5090 | — | ~107s |
 
-Hybrid chậm hơn LeWM ~4× (T4) / ~2.5× (5090). Thời gian này chỉ mang tính tham khảo vì Mamba-2 Triton kernel thiết kế cho GPU Ampere+ (A100, H100) — trên T4 (Turing) chưa tối ưu; code Hybrid chưa dùng torch.compile.
+*Hybrid chậm hơn LeWM ~4× (T4) / ~2.5× (RTX 5090) — phân tích hạn chế xem §6.4.*
 
 <p align="center">
   <img src="hinh/fig_f_cem.png" width="100%" style="border:1px solid #ddd; border-radius:4px;">
