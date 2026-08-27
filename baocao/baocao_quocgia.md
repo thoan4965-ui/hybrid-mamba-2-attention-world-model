@@ -22,21 +22,17 @@
 
 > **Một câu để nhớ: Robot này biết nhìn, biết nghĩ — và đang học cách tự lập kế hoạch trước khi hành động.**
 
-Lập kế hoạch hành động từ ảnh camera là một trong những bài toán cốt lõi của robot. Một robot cần quan sát môi trường, dự đoán hậu quả của các hành động, và chọn chuỗi hành động tối ưu để đạt mục tiêu. Trong những năm gần đây, Joint Embedding Predictive Architecture (JEPA) do LeCun [1] đề xuất đã mở ra một hướng tiếp cận mới: thay vì tái tạo từng pixel (tốn kém và dễ học nhiễu), JEPA học cách dự đoán trong **không gian tiềm ẩn** — compact, giàu thông tin, và phù hợp cho lập kế hoạch.
+Lập kế hoạch hành động từ ảnh camera là bài toán cốt lõi của robot: quan sát môi trường, dự đoán hậu quả của hành động, rồi chọn chuỗi hành động tối ưu. Joint Embedding Predictive Architecture (JEPA, LeCun [1]) mở ra hướng thay thế trực tiếp: học dự đoán trong **không gian tiềm ẩn**—gọn, giàu thông tin—thay vì tái tạo từng pixel.
 
-LeWorldModel (Maes et al. 2026) [2] là một hiện thực hóa thành công của JEPA cho world model, đạt kết quả cạnh tranh trên bốn bài kiểm chuẩn (TwoRoom 87%, Push-T 96%, Cube 74%, Reacher 88%) với chỉ 15 triệu tham số. LeWM sử dụng bộ dự đoán AR (Autoregressive Transformer) — **không trạng thái**, mỗi bước dự đoán chỉ dựa trên cửa sổ 3 khung hình. Hạn chế này khiến AR sai số tích lũy nhanh hơn khi tầm nhìn kế hoạch tăng lên H=5 (thực nghiệm: LeWM AR đạt 88%, Hybrid Mamba-2 có trạng thái đạt 94.7% ± 3.1%). Chính LeWM paper [2] ghi nhận: *"auto-regressive rollouts accumulate prediction errors as the horizon grows"* — dù ở H=10, 20, sai số tích lũy là vấn đề chung của mọi world model tiềm ẩn [2].
+LeWorldModel (Maes et al. 2026) [2] hiện thực hóa JEPA với kết quả cạnh tranh (TwoRoom 87%, Push-T 96%, Cube 74%, Reacher 88%) ở 15 triệu tham số. Tuy nhiên bộ dự đoán AR (Autoregressive Transformer) của LeWM là **không trạng thái**—mỗi bước chỉ dựa trên cửa sổ 3 khung hình—nên sai số tích lũy khi tầm nhìn kế hoạch tăng, như chính paper thừa nhận: *"auto-regressive rollouts accumulate prediction errors as the horizon grows"*. Chính vì vậy, thực nghiệm tại H=5 cho thấy khoảng cách đáng kể: LeWM AR đạt 88% trong khi kiến trúc lai có trạng thái trong nghiên cứu này đạt **94.7% ± 3.1%** (kết quả chi tiết tại §5).
 
-Nhận thấy điểm yếu này, tôi đặt giả thuyết: một bộ dự đoán **có trạng thái** sẽ chạy chuỗi dài tốt hơn AR không trạng thái. CfC (Hasani et al. 2022) [3] là ứng viên phù hợp với trạng thái ẩn ODE liên tục theo thời gian. Tôi xây dựng thí nghiệm trên **robot thật** (tay bionic 8-DOF tự chế, servo, khung in 3D) để so sánh AR và CfC trong cùng điều kiện: CfC đạt **độ trượt dự đoán 0.000014/bước, thấp hơn AR 34 lần** — giả thuyết đúng. Kỹ thuật Scheduled Sampling (SS) — vốn chưa được áp dụng cho ODE-RNN/CfC trước đây — giúp cải thiện chuỗi dự đoán của CfC thêm **29 lần** (từ 0.072 xuống 0.0025).
-
-Tuy nhiên, khi đưa CfC vào kiến trúc JEPA, vấn đề phát sinh — không phải do CfC yếu, mà do **tương tác giữa SIGReg và trạng thái ODE**. SIGReg (Balestriero & LeCun 2025) [5] là thành phần chống sụp đổ (chống collapse) của JEPA, dùng các phép chiếu ngẫu nhiên để ép latent về phân phối Gaussian. Nhiễu từ các phép chiếu này vô hại với AR (không trạng thái), nhưng CfC — với trạng thái ẩn ODE liên tục — **khuếch đại nhiễu** qua động học vi phân. Hybrid CfC+Attention (V1) đạt 78% ở goal gần, nhưng giảm xuống 6% khi goal xa hơn.
-
-Để giải quyết, tôi thay CfC bằng **Mamba-2** (Dao & Gu 2024) [4] — mô hình trạng thái có lọc (selective state space model) với trạng thái **rời rạc**, không khuếch đại nhiễu, và có kernel tối ưu GPU. Kiến trúc đề xuất: **6×{Self-Attention(AdaLN) → Mamba-2}** — Attention giữ độ chính xác cho điều khiển theo hành động (action conditioning) ngắn hạn, Mamba-2 đảm nhiệm tính nhất quán thời gian dài hơn.
+Hành trình đến kết quả đó không thẳng một đường: tôi bắt đầu bằng giả thuyết bộ dự đoán **có trạng thái** sẽ chạy chuỗi dài tốt hơn, kiểm chứng trên **robot thật tay bionic 8-DOF tự chế**; sau đó chạm phải một hiện tượng bất ngờ khi đưa CfC (trạng thái ODE liên tục) vào JEPA—không phải do CfC yếu, mà do **tương tác giữa SIGReg và trạng thái ODE**—và cuối cùng thay thành phần đó bằng **Mamba-2** (Dao & Gu 2024) [4], với kiến trúc **6×{Self-Attention(AdaLN) → Mamba-2}**. Toàn bộ hành trình này được trình bày tại §4.
 
 **Ba đóng góp chính:**
 
-1. **Scheduled Sampling cho CfC-ODE-RNN** — kỹ thuật chưa được áp dụng cho loại mô hình này cho đến nay (chi tiết §4.1).
+1. **Scheduled Sampling cho CfC-ODE-RNN** — kỹ thuật lần đầu được áp dụng cho loại mô hình này (chi tiết §4.1).
 2. **Phát hiện tương tác SIGReg × trạng thái ODE** — nhiễu chống-collapse bị khuếch đại bởi động học liên tục, nguyên nhân thất bại của kiến trúc lai đầu tiên (chi tiết §4.2).
-3. **Kiến trúc lai block-level Mamba-2+Attention** — Attention và SSM trong cùng một khối (Jamba/TransMamba chỉ lai ở mức tầng), lần đầu dùng Mamba-2 trạng thái rời rạc làm bộ dự đoán trong JEPA world model (kết quả §5).
+3. **Kiến trúc lai block-level Mamba-2+Attention** — lần đầu tiên Attention và SSM kết hợp trong cùng một khối (Jamba/TransMamba chỉ lai ở mức tầng), lần đầu Mamba-2 trạng thái rời rạc làm bộ dự đoán trong JEPA world model (kết quả §5).
 
 ***
 
@@ -184,7 +180,7 @@ Thay CfC bằng Mamba-2 (trạng thái rời rạc, không khuếch đại nhi�
 
 ## 5\. Kết quả
 
-*Kết quả dưới đây là số liệu chính của nghiên cứu — so sánh trong cùng điều kiện: cùng seed 3072/3073/3074, cùng cấu hình H=K=5, cùng eval.py; LeWM đối chiếu từ 3 nguồn (GitHub, local, paper).*
+Từ giả thuyết ở §1 đến đây, tám lần thiết kế — CfC, công thức, SIGReg — đã thay 6. Mỗi thử nghiệm dưới đây là bằng chứng thật, so trong cùng điều kiện: cùng 3 seeds, cùng cấu hình H=K=5, cùng eval.py; LeWM đối chiếu từ 3 nguồn (GitHub, local, paper).
 
 ### 5\.1\. TwoRoom
 
@@ -338,6 +334,8 @@ Chuỗi vận hành: robot tìm rác (SEARCH) → di chuyển tới gần (NAV) 
 Khi gặp dữ liệu lạ, hệ thống tuần theo 5 bước: (1) nhận ra lạ — OOD và mô hình kiểm chứng cùng báo động; (2) an toàn — α giảm về 0, robot chuyển sang điều khiển giải tích thuần và thử lại; (3) học lại — cập nhật cục bộ từ kênh tự động (các lần thành công) kèm giữ trọng số gần bản gốc; (4) quen dần — ngưỡng nhận biết lạ tăng lên, độ tin cậy α phục hồi dần; (5) mù hẳn — robot kêu gọi người thao tác, không bao giờ hỏng im lặng. Mục tiêu z_goal và phần thân cơ sở cố định trong suốt quá trình học.
 
 Bản thiết kế này là **hướng nghiên cứu tiếp nối** — kêu gọi khai thác thực nghiệm trên nền robot thật, và thể hiện tính liên tục của hành trình nghiên cứu (từ V0 robot tay thật → V2.1 đạt chuẩn benchmark → V2.5.2 đẩy vào ứng dụng thực tế).
+
+Về mặt ý nghĩa thực tế, một robot nhặt rác di động có thể được triển khai tại trường học, khuôn viên công cộng hoặc sân chơi — những nơi rác nhỏ như vỏ chai, nilon còn rơi vãi hằng ngày. Điểm đáng chú ý là toàn bộ hình thái và triết lý "reflex + tự biết lạ + học không quên" được minh họa bằng mô hình nhỏ, có thể tái tạo bởi học sinh — mở ra khả năng nhân rộng tại nhiều trường cùng đam mê kỹ thuật, thay vì một sản phẩm đắt đỏ chỉ mua được một lần.
 
 **Cam kết tiến độ:** nghiên cứu tiếp nối dự kiến hoàn thành trong **6 tuần** khi được hỗ trợ tiếp tục hoàn thiện.
 
