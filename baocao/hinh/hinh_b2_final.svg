@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 640" width="1440" height="640"
+     font-family="Times New Roman, Times, serif">
+<defs>
+  <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+  </marker>
+</defs>
+
+<!-- ========== CỘT 1 ========== -->
+<rect x="40"  y="400" width="260" height="100" rx="14" fill="#fffbeb" stroke="#d97706" stroke-width="3"/>
+<text x="170" y="455" text-anchor="middle" font-size="23" fill="#1c2431">3×18650 20A (~11.1V)</text>
+
+<rect x="40"  y="180" width="260" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
+<text x="170" y="238" text-anchor="middle" font-size="23" fill="#1c2431">Webcam USB 480p</text>
+
+<!-- ========== CỘT 2 ========== -->
+<rect x="400" y="400" width="260" height="100" rx="14" fill="#fffbeb" stroke="#d97706" stroke-width="3"/>
+<text x="530" y="455" text-anchor="middle" font-size="23" fill="#1c2431">Mạch hạ áp (6V, 15A)</text>
+
+<rect x="400" y="180" width="260" height="100" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/>
+<text x="530" y="228" text-anchor="middle" font-size="21" fill="#1c2431">PC (Python) — scservo_sdk</text>
+<text x="530" y="256" text-anchor="middle" font-size="18" fill="#333">(encode + CEM + WritePos)</text>
+
+<!-- ========== CỘT 3 ========== -->
+<rect x="760" y="400" width="260" height="100" rx="14" fill="#fffbeb" stroke="#d97706" stroke-width="3"/>
+<text x="890" y="455" text-anchor="middle" font-size="23" fill="#1c2431">Bus servo (SCS CL)</text>
+<text x="890" y="480" text-anchor="middle" font-size="16" fill="#333">6V + tín hiệu</text>
+
+<rect x="760" y="180" width="260" height="100" rx="14" fill="#f3f4f6" stroke="#444" stroke-width="3"/>
+<text x="890" y="228" text-anchor="middle" font-size="21" fill="#1c2431">USB-UART — Serial COM13</text>
+<text x="890" y="256" text-anchor="middle" font-size="18" fill="#333">@ 1 Mbps</text>
+
+<!-- ========== SC09 ×9 ========== -->
+<rect x="400" y="20" width="620" height="100" rx="14" fill="#f0f9ff" stroke="#0369a1" stroke-width="3"/>
+<text x="710" y="66"  text-anchor="middle" font-size="23" fill="#1c2431">SC09 SERVO ×9</text>
+<text x="710" y="94"  text-anchor="middle" font-size="17" fill="#333">(cái, trỏ, giữa — gập/khép)</text>
+
+<!-- ========== 4 MŨI NGANG (dừng đúng vành) ========== -->
+<line x1="300" y1="450" x2="395" y2="450" stroke="#d97706" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="660" y1="450" x2="755" y2="450" stroke="#d97706" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="300" y1="230" x2="395" y2="230" stroke="#2563eb" stroke-width="3.5" marker-end="url(#m)"/>
+<line x1="660" y1="230" x2="755" y2="230" stroke="#444"   stroke-width="3.5" marker-end="url(#m)"/>
+
+<!-- ========== 2 MŨI DỌC TÁCH RIÊNG (dừng đúng vành) ========== -->
+<line x1="840" y1="400" x2="840" y2="285" stroke="#d97706" stroke-width="3.5" marker-end="url(#m)"/> <!-- Bus → vành trên UART -->
+<line x1="940" y1="180" x2="940" y2="125" stroke="#444"   stroke-width="3.5" marker-end="url(#m)"/> <!-- UART → vành trên SC09×9 -->
+
+<text x="770" y="330" text-anchor="end" font-size="16" fill="#8a6d00">cấp nguồn 6V</text>
+<text x="1040" y="152" text-anchor="start" font-size="16" fill="#444">tín hiệu RX/TX</text>
+</svg>
